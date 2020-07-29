@@ -1,1 +1,373 @@
-测试一下
+<!DOCTYPE html>
+<html lang="zh_CN">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=11">
+    <meta name="description" content="这是一款 HTML5 开发的 CXK 打篮球小游戏，无聊的时候玩玩吧！">
+    <meta name="keywords" content="CXK,打篮球,游戏,弹球,篮球,HTML5,caixukun,CXK出来打球,你打篮球像CXK">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css?s=2">
+    <title>CXK邀请你一起打球</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?5adedb455da362ba577abe2fd8e1095d";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+
+<body>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+</body>
+
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>CXK邀请你一起打球</h2>
+                <hr>
+                <center>
+                    <p>
+                        <div class="input-group">
+                            <span class="input-group-addon">选择难度</span>
+                            <select class="form-control" id="ballspeedset">
+									<option value="2"selected>简单</option>
+									<option value="3" >普通</option>
+									<option value="5">困难</option>
+									<option value="7">极限</option>
+									<option value="9">非人类</option>
+								</select>
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-danger" onclick="window.startGame()">开始游戏</button>
+                                <button type="button" class="btn btn-warning" onclick="window.pauseGame()">暂停游戏</button>
+
+                            </div>
+                        </div>
+                    </p>
+                </center>
+                <center id="cdiv" style="width: 100%;">
+                    <p><canvas id="canvas" style="width: 100%;height: 563px;"></canvas></p>
+                </center>
+                <hr>
+                <h3>游戏说明</h3>
+                <p>使用方向键控制 CXK 左右移动，使用回车让 CXK 发球，按 P 暂停游戏，通关后按 N 进入下一关，按 M 可以暂停音乐</p>
+                <p>移动端可以点击屏幕左右控制 CXK 移动。</p>
+                <p>如果出现显示不正常的情况请截图并通过捷径盒反馈。</p>
+                <br>
+            </div>
+        </div>
+    </div>
+</body>
+<img src="images/ball.png" style="width: 0px;height: 0px;" />
+<img src="images/ballshadow.png" style="width: 0px;height: 0px;" />
+<img src="images/paddle_1.png" style="width: 0px;height: 0px;" />
+<img src="images/paddle_2.png" style="width: 0px;height: 0px;" />
+<img src="images/paddle2_1.png" style="width: 0px;height: 0px;" />
+<img src="images/paddle2_2.png" style="width: 0px;height: 0px;" />
+<img src="images/paddle3_1.png" style="width: 0px;height: 0px;" />
+<img src="images/paddle3_2.png" style="width: 0px;height: 0px;" />
+<audio src="" style="width: 0px;height: 0px;border: 0px;" id="audio" loop="-1"></audio>
+<script src="js/common.js?s=4"></script>
+<script src="js/scene.js?s=4"></script>
+<script src="js/game.js?s=4"></script>
+<script src="js/main.js?s=4"></script>
+<script>
+    var clientWidth = document.body.clientWidth;
+    var cxk_body = 1;
+    var move_way = 1;
+    canvas.width = canvas.clientWidth;
+    canvas.style.width = canvas.clientWidth + "px";
+    cdiv.style.width = cdiv.clientWidth + "px";
+    canvas.height = canvas.clientWidth / 1000 * 563;
+    canvas.style.height = canvas.clientWidth / 1000 * 563 + "px";
+    cdiv.style.height = cdiv.clientWidth / 1000 * 563 + "px";
+    if (canvas.width < 936) {
+        canvas.width = 936;
+        canvas.height = 936 / 1000 * 563;
+        canvas.setAttribute("style", "");
+        canvas.style.zoom = (cdiv.clientWidth / 936);
+        canvas.style
+    } else {
+
+    }
+    window.startGame = function() {
+        $("#audio").attr("src", "media/jntm.m4a");
+        audio.play();
+        window.cacheBallSpeed = parseInt($("#ballspeedset").val());
+        $("#ballspeedset").attr("disabled", "disabled");
+        _main.start();
+        setInterval(function() {
+            if (cxk_body == 1) {
+                _main.paddle.image.src = "images/paddle2_" + move_way + ".png";
+                cxk_body = 2;
+            } else if (cxk_body == 2) {
+                _main.paddle.image.src = "images/paddle3_" + move_way + ".png";
+                cxk_body = 3;
+            } else {
+                _main.paddle.image.src = "images/paddle_" + move_way + ".png";
+                cxk_body = 1;
+            }
+        }, 200);
+        _main.ballshadow.y = 545;
+        setInterval(function() {
+            if (_main.ball.y < 530) {
+                _main.ballshadow.x = _main.ball.x;
+                _main.ballshadow.y = 545;
+            } else {
+                _main.ballshadow.x = _main.ball.x;
+                _main.ballshadow.y = _main.ball.y + 20;
+            }
+        }, 10);
+    }
+</script>
+<html lang="zh-cn">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="http://www.23yue.cn/xr/music.css" rel="stylesheet" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" />
+
+<head>
+    <audio src="http://music.163.com/song/media/outer/url?id=1353163848.mp3" controls="controls" preload="none" id="music" hidden></audio>
+    <div onclick="a();" class="music">
+        <img src="http://www.23yue.cn/xr/233.gif" width="64px" height="64px" id="d" onclick="c();">
+    </div>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="http://www.23yue.cn/xr/music.css" rel="stylesheet" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <lang lang="en"></lang>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <head>
+        <audio src="http://music.163.com/song/media/outer/url?id=1353163848.mp3" controls="controls" preload="none" id="music" hidden></audio>
+        <div onclick="a();" class="music">
+            <img src="http://www.23yue.cn/xr/233.gif" width="100px" height="100px" id="d" onclick="c();">
+        </div>
+        <title>乔妹</title>
+        <meta name="keywords" content="要饭网,在线要饭,要饭网站,乞讨网,打赏网,网络打赏,网络要饭,网上乞讨,全球要饭,打赏一点,赞助菜刀,菜刀要饭,辽工大要饭网,中国要饭网,神乞网上乞讨,怎样网上乞讨">
+        <meta name="description" content="乔妹">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.9">
+        <link rel="stylesheet" href="https://css.letvcdn.com/lc04_yinyue/201612/19/20/00/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/dashang.css">
+        <link rel="stylesheet" type="text/css" href="css/yaofan.css">
+    </head>
+    <div class="container" style="padding-top:20px;">
+        <div class="col-xs-12 col-sm-10 col-lg-8 center-block" style="float: none;">
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="background: linear-gradient(to right,#bcffbc,#60bfce,#dfa5ff);">
+                    <center>
+                        <font color=""><b><font color="#003366">虽</font><font color="#112277">然</font><font color="#221188">不</font><font color="#330099">喜</font><font color="#4411AA">欢</font><font color="#5500BB">你</font><font color="#6611CC">了</font><font color="#7700DD">，</font><font color="#8811EE">但</font><font color="#9900FF">还</font><font color="#AA11FF">是</font><font color="#BB00FF">有</font><font color="#CC11FF">点</font><font color="#DD00FF">想</font><font color="#EE11FF">你</font></b></font>
+                    </center>
+                </div>
+                <div class="panel-body">
+                    <center>
+                        <div class="alert alert-success">
+                            <a href="https://jiejinghe.com/users/2356471049
+                            "><img class="img-circle m-b-xs" style="border: 2px solid #00000000; margin-left:0px; margin-right:0px;" src="https://xs1.imd.im/avatar/200729/53IBDal0e.jpg
+
+                            " ; width="60px" height="60px" alt="乔妹"><br></a>
+                            <font color="#0000FF">温</font>
+                            <font color="#0909F5">馨</font>
+                            <font color="#1200EC">提</font>
+                            <font color="#1C09E2">示</font>
+                            <font color="#2500D9">：</font>
+                            <font color="#2F09CF">网</font>
+                            <font color="#3800C6">页</font>
+                            <font color="#4209BC">功</font>
+                            <font color="#4B00B3">能</font>
+                            <font color="#5509A9">仅</font>
+                            <font color="#5E00A0">供</font>
+                            <font color="#670997">娱</font>
+                            <font color="#71008D">乐</font>
+                            <font color="#7A0984">，</font>
+                            <font color="#84007A">打</font>
+                            <font color="#8D0971">赏</font>
+                            <font color="#970067">金</font>
+                            <font color="#A0095E">额</font>
+                            <font color="#AA0054">将</font>
+                            <font color="#B3094B">全</font>
+                            <font color="#BC0042">部</font>
+                            <font color="#C60938">用</font>
+                            <font color="#CF002F">于</font>
+                            <font color="#D90925">网</font>
+                            <font color="#E2001C">站</font>
+                            <font color="#EC0912">建</font>
+                            <font color="#F50009">设</font>
+                        </div>
+                    </center>
+
+                    <div class="content1">
+                        <center>
+                            <div class="alert alert-warning">
+                                <a href="alipays://platformapi/startapp?appId=09999988&actionType=toAccount&goBack=打赏&amount=1&userId=2088222752632557&memo=1" target="_blank">
+                                    <h4>
+                                        <font color=<font color="#0000FF">推</font>
+                                        <font color="#2424DA">荐</font>
+                                        <font color="#4800B6">使</font>
+                                        <font color="#6D2491">用</font>
+                                        <font color="#91006D">支</font>
+                                        <font color="#B62448">付</font>
+                                        <font color="#DA0024">宝</font>
+                                    </h4>
+                                </a>
+                            </div>
+                        </center>
+                        <center>
+                            <font color="#FF2800"><b><font color="#FF2800">↗</font> <font color="#FF5000">↑</font> <font color="#FF7800">↑</font> <font color="#FFA000">↑</font> <font color="#FFC800">↑</font> <font color="#FFF000">疯</font><font color="#D7FF00">狂</font><font color="#AFFF00">暗</font><font color="#87FF00">示</font> <font color="#5FFF00">↑</font> <font color="#37FF00">↑</font> <font color="#0FFF00">↑</font> <font color="#00FF28">↑</font> <font color="#00FF50">↖</font></b></font>
+                        </center>
+                        <div class="hide_box" style="display: none;"></div>
+                        <div class="shang_box" style="display: none;">
+                            <div class="shang_tit">
+                            </div>
+                            <div class="shang_payselect">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <center>
+                    <img src="https://xs1.imd.im/avatar/200729/Y26hZpkIj.jpg
+                    " width="60%"></center><br>
+                <p style="text-align:center">&copy; by 乔妹</a>
+                </p>
+                <p style="text-align:center">
+
+                </p>
+                <div class="am-container">
+                    <script>
+                        document.addEventListener('visibilitychange', function() {
+                            if (document.visibilityState == 'hidden') {
+                                normal_title = document.title;
+                                document.title = '嘤嘤嘤系统崩溃い';
+                            } else {
+                                document.title = normal_title;
+                            }
+                        });
+                    </script>
+
+                    <script type="text/javascript">
+                        document.onkeydown = function() {
+                            if (window.event && window.event.keyCode == 123) {
+                                event.keyCode = 0;
+                                event.returnValue = false;
+                                return false;
+                            }
+                            if (event.ctrlKey && window.event.keyCode == 85) {
+                                return false;
+                            }
+                        };
+                    </script>
+
+                    <script type="text/javascript">
+                        function warning() {
+                            if (navigator.userAgent.indexOf("MSIE") > 0) {
+                                art.dialog.alert('欢迎光临这里是乔妹的工具箱！您的内容已复制成功，若要转载还请务必保留原文链接，申明来源，谢谢合作！');
+                            } else {
+                                alert('欢迎光临这里是乔妹的工具箱！您的内容已复制成功，若要转载还请务必保留原文链接，申明来源，谢谢合作！');
+                            }
+                        }
+                        document.body.oncopy = function() {
+                            warning();
+                        }
+                    </script>
+
+
+
+
+
+                    <script>
+                        window.onload = function() {
+                            var lastTouchEnd = 0;
+                            document.addEventListener('touchstart', function(event) {
+                                if (event.touches.length > 1) {
+                                    event.preventDefault();
+                                }
+                            });
+                            document.addEventListener('touchend', function(event) {
+                                var now = (new Date()).getTime();
+                                if (now - lastTouchEnd <= 300) {
+                                    event.preventDefault();
+                                }
+                                lastTouchEnd = now;
+                            }, false);
+                            document.addEventListener('gesturestart', function(event) {
+                                event.preventDefault();
+                            });
+                            document.addEventListener('dblclick', function(event) {
+                                event.preventDefault();
+                            })
+                        }
+                    </script>
+
+
+
+
+                    <body ondragstart="return false" oncontextmenu="return false" onselectstart="return false"></body>
+
+
+
+                    <script>
+                        function fuckyou() {
+                            window.close();
+                            window.location = "about:blank";
+
+                        }
+
+                        function ck() {
+
+                            console.profile();
+
+                            console.profileEnd();
+
+                            if (console.clear) {
+                                console.clear()
+                            };
+
+                            if (typeof console.profiles == "object") {
+
+                                return console.profiles.length > 0;
+
+                            }
+
+                        }
+
+                        function hehe() {
+
+                            if ((window.console && (console.firebug || console.table && /firebug/i.test(console.table()))) || (typeof opera == 'object' && typeof opera.postError == 'function' && console.profile.length > 0)) {
+                                fuckyou();
+
+                            }
+
+                            if (typeof console.profiles == "object" && console.profiles.length > 0) {
+                                fuckyou();
+
+                            }
+
+                        }
+                        hehe();
+                        window.onresize = function() {
+
+                            if ((window.outerHeight - window.innerHeight) > 200)
+
+                                fuckyou();
+
+                        }
+                    </script>
+
+                    </body>
+
+</html>
+
+</html>
+
+</html>
